@@ -68,3 +68,34 @@ jobs:
 
       - name: E2E tests
         run: pnpm test:e2e
+
+  api:
+    name: API tests
+    needs: format-lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup PNPM
+        uses: pnpm/setup@v2
+        with:
+          cache: true
+
+      - name: Build
+        run: pnpm build
+
+      - name: Run the server
+        id: server
+        run: node --run start:prod
+        background: true
+
+      - name: Run API tests
+        uses: usebruno/bruno-cli-action@v1
+        with:
+          working-directory: test/api
+          command: run --env development
+
+      - name: Stop the server
+        cancel: server
+
