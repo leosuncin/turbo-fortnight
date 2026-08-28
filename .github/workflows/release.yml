@@ -1,0 +1,26 @@
+name: Release a new version
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  release:
+    name: Release a new version 🚀
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - name: Checkout 🛎
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Setup PNPM 🧰
+        uses: pnpm/setup@v2
+        with:
+          cache: true
+
+      - name: Release 🚀
+        run: pnpm exec semantic-release
