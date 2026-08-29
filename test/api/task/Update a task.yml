@@ -1,0 +1,49 @@
+info:
+  name: Update a task
+  type: http
+  seq: 4
+
+http:
+  method: PATCH
+  url: "{{BASE_URL}}/task/:taskId"
+  params:
+    - name: taskId
+      value: "{{TASK_ID}}"
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "done": true
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("task updated is valid", () => {
+          const taskId = bru.getVar('TASK_ID');
+          const payload = req.getBody();
+          const task = res.getBody();
+
+          expect(task).to.have.property('id', taskId);
+          expect(task).to.have.property('description').and.to.be.an('string');
+          expect(task).to.have.property('done', payload.done);
+        });
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "200"
+    - expression: res.responseTime
+      operator: lt
+      value: "200"
+    - expression: res.headers['content-type']
+      operator: contains
+      value: application/json
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

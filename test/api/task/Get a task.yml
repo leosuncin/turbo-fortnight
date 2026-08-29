@@ -1,0 +1,42 @@
+info:
+  name: Get a task
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{BASE_URL}}/task/:taskId"
+  params:
+    - name: taskId
+      value: "{{TASK_ID}}"
+      type: path
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("task returned is valid", () => {
+          const taskId = bru.getVar('TASK_ID');
+          const task = res.getBody();
+
+          expect(task).to.have.property('id', taskId);
+          expect(task).to.have.property('description').and.to.be.an('string');
+          expect(task).to.have.property('done').and.to.be.an('boolean');
+        });
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "200"
+    - expression: res.responseTime
+      operator: lt
+      value: "200"
+    - expression: res.headers['content-type']
+      operator: contains
+      value: application/json
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

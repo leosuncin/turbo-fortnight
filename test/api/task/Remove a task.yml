@@ -1,0 +1,39 @@
+info:
+  name: Remove a task
+  type: http
+  seq: 5
+
+http:
+  method: DELETE
+  url: "{{BASE_URL}}/task/:taskId"
+  params:
+    - name: taskId
+      value: "{{TASK_ID}}"
+      type: path
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("task removed", () => {
+          const taskId = bru.getVar('TASK_ID');
+          const task = res.getBody();
+
+          expect(task).to.have.property('id', taskId);
+          expect(task).to.have.property('description').and.to.be.an('string');
+          expect(task).to.have.property('done').and.to.be.an('boolean');
+        });
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "200"
+    - expression: res.responseTime
+      operator: lt
+      value: "200"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

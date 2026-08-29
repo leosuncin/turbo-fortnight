@@ -1,0 +1,46 @@
+info:
+  name: Create a task
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{BASE_URL}}/task"
+  body:
+    type: json
+    data: |-
+      {
+        "description": "{{$randomLoremParagraph}}"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: bru.setVar('TASK_ID', res.body.id);
+    - type: tests
+      code: |-
+        test("task created is valid", () => {
+          const payload = req.getBody();
+          const task = res.getBody();
+
+          expect(task).to.have.property('id');
+          expect(task).to.have.property('description', payload.description);
+          expect(task).to.have.property('done', false);
+        });
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "201"
+    - expression: res.responseTime
+      operator: lt
+      value: "200"
+    - expression: res.headers['content-type']
+      operator: contains
+      value: application/json
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

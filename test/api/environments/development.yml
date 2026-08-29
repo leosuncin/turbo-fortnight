@@ -1,4 +1,4 @@
 name: development
 variables:
   - name: BASE_URL
-    value: http://localhost:3000
+    value: http://localhost:1337
