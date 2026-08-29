@@ -1,0 +1,60 @@
+name: Publish the Docker image
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Docker build cache
+        uses: actions/cache@v6
+        id: cache
+        with:
+          path: pnpm-store-cache
+          key: ${{ runner.os }}-pnpm-store-cache-${{ hashFiles('**/pnpm-lock.yaml') }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Restore build cache
+        uses: reproducible-containers/buildkit-cache-dance@v3
+        with:
+          cache-dir: pnpm-store-cache
+          skip-extraction: ${{ steps.cache.outputs.cache-hit }}
+
+      - name: Docker image metadata
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' }}
+            type=sha
+
+      - name: Bake the image
+        uses: docker/bake-action@v7
+        with:
+          push: true
+          files: |
+            ./docker-bake.hcl
+            cwd://${{ steps.meta.outputs.bake-file }}
+          set: |
+            *.cache-from=type=gha
+            *.cache-to=type=gha,mode=max
