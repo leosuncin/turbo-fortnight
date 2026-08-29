@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTask } from './dto/create-task.dto.js';
 import { UpdateTask } from './dto/update-task.dto.js';
-import { Task } from "./entities/task.entity.js";
+import { Task } from './entities/task.entity.js';
 
 @Injectable()
 export class TaskService {
-  #db = new Map<Task['id'], Task>()
+  #db = new Map<Task['id'], Task>();
 
   create(createTask: CreateTask) {
-    const task = new Task()
+    const task = new Task();
 
-    task.description = createTask.description
+    task.description = createTask.description;
 
-    this.#db.set(task.id, task)
+    this.#db.set(task.id, task);
 
     return task;
   }
@@ -26,7 +26,7 @@ export class TaskService {
   }
 
   update(id: Task['id'], updateTask: UpdateTask) {
-    const task = this.#db.get(id)
+    const task = this.#db.get(id);
 
     if (task) {
       Object.assign(task, updateTask);
@@ -36,9 +36,9 @@ export class TaskService {
   }
 
   remove(id: Task['id']) {
-    const task = this.#db.get(id)
+    const task = this.#db.get(id);
 
-    this.#db.delete(id)
+    this.#db.delete(id);
 
     return task;
   }

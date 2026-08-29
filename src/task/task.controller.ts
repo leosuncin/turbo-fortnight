@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  ValidationPipe,
+} from '@nestjs/common';
 
 import { CreateTask } from './dto/create-task.dto.js';
 import { UpdateTask } from './dto/update-task.dto.js';
@@ -10,7 +20,10 @@ export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
   @Post()
-  create(@Body(new ValidationPipe({ transform: true, whitelist: true })) createTask: CreateTask) {
+  create(
+    @Body(new ValidationPipe({ transform: true, whitelist: true }))
+    createTask: CreateTask,
+  ) {
     return this.taskService.create(createTask);
   }
 
@@ -25,7 +38,11 @@ export class TaskController {
   }
 
   @Patch(':id')
-  update(@Param('id', ParseUUIDPipe) id: Task['id'], @Body(new ValidationPipe({ transform: true, whitelist: true })) updateTask: UpdateTask) {
+  update(
+    @Param('id', ParseUUIDPipe) id: Task['id'],
+    @Body(new ValidationPipe({ transform: true, whitelist: true }))
+    updateTask: UpdateTask,
+  ) {
     return this.taskService.update(id, updateTask);
   }
 

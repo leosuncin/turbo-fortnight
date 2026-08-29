@@ -18,20 +18,20 @@ describe('AppController (e2e)', () => {
   });
 
   afterEach(async () => {
-    await app.close()
-  })
+    await app.close();
+  });
 
   it('/task (POST)', async () => {
-    const data = { description: 'Just do it' }
+    const data = { description: 'Just do it' };
 
     await request(app.getHttpServer())
       .post('/task')
       .send(data)
       .expect(HttpStatus.CREATED)
       .expect((response) => {
-        expect(response.body).toHaveProperty('id')
-        expect(response.body).toHaveProperty('description', data.description)
-        expect(response.body).toHaveProperty('done', false)
+        expect(response.body).toHaveProperty('id');
+        expect(response.body).toHaveProperty('description', data.description);
+        expect(response.body).toHaveProperty('done', false);
       });
   });
 
@@ -40,7 +40,7 @@ describe('AppController (e2e)', () => {
       .get('/task')
       .expect(HttpStatus.OK)
       .expect((response) => {
-        expect(response.body).toEqual(expect.arrayContaining([]))
+        expect(response.body).toEqual(expect.arrayContaining([]));
       });
   });
 });
