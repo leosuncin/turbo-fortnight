@@ -87,8 +87,8 @@ jobs:
 
       - name: Run the server
         id: server
-        run: node --run start:prod
         background: true
+        run: node --run start:prod
 
       - name: Run API tests
         uses: usebruno/bruno-cli-action@v1
