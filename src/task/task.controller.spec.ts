@@ -1,4 +1,4 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { TestBed } from '@suites/unit';
 
 import { TaskController } from './task.controller.js';
 import { TaskService } from './task.service.js';
@@ -7,12 +7,9 @@ describe('TaskController', () => {
   let controller: TaskController;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [TaskController],
-      providers: [TaskService],
-    }).compile();
+    const { unit } = await TestBed.sociable(TaskController).expose(TaskService).compile();
 
-    controller = module.get<TaskController>(TaskController);
+    controller = unit;
   });
 
   it('should be defined', () => {

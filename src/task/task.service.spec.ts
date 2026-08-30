@@ -1,4 +1,4 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { TestBed } from '@suites/unit';
 
 import { TaskService } from './task.service.js';
 
@@ -6,11 +6,9 @@ describe('TaskService', () => {
   let service: TaskService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [TaskService],
-    }).compile();
+    const { unit } = await TestBed.solitary(TaskService).compile();
 
-    service = module.get<TaskService>(TaskService);
+    service = unit;
   });
 
   it('should be defined', () => {
