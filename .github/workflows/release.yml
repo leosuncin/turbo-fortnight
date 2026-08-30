@@ -1,4 +1,4 @@
-name: Release a new version
+name: Release
 
 on:
   push:
@@ -13,18 +13,21 @@ jobs:
       issues: write
       pull-requests: write
     steps:
-      - name: Checkout 🛎
+      - name: Checkout
         uses: actions/checkout@v7
         with:
           persist-credentials: false
           fetch-depth: 0
 
-      - name: Setup PNPM 🧰
-        uses: pnpm/setup@v2
+      - name: Setup node
+        uses: actions/setup-node@v7
         with:
-          cache: true
+          node-version: 26
 
       - name: Release 🚀
-        run: pnpm exec semantic-release
+        run: |-
+          npx --package=@semantic-release/changelog \
+          --package=@semantic-release/git \
+          semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
