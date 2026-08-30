@@ -10,10 +10,17 @@ on:
 jobs:
   docker:
     runs-on: ubuntu-latest
+    name: Build and push the Docker image
     permissions:
       contents: read
       packages: write
     steps:
+      - name: Get all relevant tags
+        id: semver
+        uses: jupyterhub/action-major-minor-tag-calculator@v3
+        with:
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Docker build cache
         uses: actions/cache@v6
         id: cache
