@@ -5,9 +5,7 @@ import { AppService } from './app.service.js';
 import { TaskModule } from './task/task.module.js';
 
 @Module({
-  imports: [
-    TaskModule,
-  ],
+  imports: [TaskModule],
   controllers: [AppController],
   providers: [AppService],
 })
