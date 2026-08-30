@@ -4,10 +4,69 @@ on:
   push:
     branches: [master]
 
+permissions:
+  contents: read
+
 jobs:
-  release:
-    name: Release a new version 🚀
+  build:
+    name: Build the new version
     runs-on: ubuntu-latest
+    steps:
+      - name: Docker build cache
+        uses: actions/cache@v6
+        id: cache
+        with:
+          path: pnpm-store-cache
+          key: build-cache-${{ github.ref_name }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Restore the build cache
+        uses: reproducible-containers/buildkit-cache-dance@v3
+        with:
+          cache-dir: pnpm-store-cache
+          skip-extraction: ${{ steps.cache.outputs.cache-hit }}
+          cache-map: |
+            { "pnpm-store-cache": "/pnpm/store" }
+
+      - name: Bake the image
+        uses: docker/bake-action@v7
+        with:
+          push: true
+          set: |
+            *.tags=ttl.sh/${{ github.sha }}:1h
+            *.cache-from=type=gha
+            *.cache-to=type=gha,mode=max
+
+  test:
+    name: Run tests against the new version
+    runs-on: ubuntu-latest
+    needs:
+      - build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Run the image
+        run: docker run --rm -p 127.0.0.1:3000:3000 ttl.sh/${{ github.sha }}:1h
+        id: container
+        background: true
+
+      - name: Run the tests
+        uses: usebruno/bruno-cli-action@v1
+        with:
+          working-directory: test/api
+          command: run --env development
+
+      - name: Stop the container
+        cancel: container
+
+  release:
+    name: Release a new version
+    runs-on: ubuntu-latest
+    needs:
+      - test
     permissions:
       contents: write
       issues: write
@@ -24,7 +83,7 @@ jobs:
         with:
           node-version: 26
 
-      - name: Release 🚀
+      - name: Release
         run: |-
           npx --package=@semantic-release/changelog \
           --package=@semantic-release/git \
