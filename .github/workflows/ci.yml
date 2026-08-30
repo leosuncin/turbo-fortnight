@@ -98,4 +98,3 @@ jobs:
 
       - name: Stop the server
         cancel: server
-
