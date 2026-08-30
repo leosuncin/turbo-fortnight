@@ -9,6 +9,7 @@ WORKDIR /usr/src/app
 RUN --mount=type=cache,target=/pnpm/store,sharing=locked \
     --mount=type=bind,source=package.json,target=/usr/src/app/package.json \
     --mount=type=bind,source=pnpm-lock.yaml,target=/usr/src/app/pnpm-lock.yaml \
+    --mount=type=bind,source=pnpm-workspace.yaml,target=/usr/src/app/pnpm-workspace.yaml \
     pnpm install --frozen-lockfile
 
 FROM deps AS build
@@ -18,6 +19,7 @@ COPY ./src ./src
 RUN --mount=type=cache,target=/pnpm/store,sharing=locked \
     --mount=type=bind,source=package.json,target=/usr/src/app/package.json \
     --mount=type=bind,source=pnpm-lock.yaml,target=/usr/src/app/pnpm-lock.yaml \
+    --mount=type=bind,source=pnpm-workspace.yaml,target=/usr/src/app/pnpm-workspace.yaml \
     --mount=type=bind,source=tsconfig.json,target=/usr/src/app/tsconfig.json \
     --mount=type=bind,source=tsconfig.build.json,target=/usr/src/app/tsconfig.build.json \
     pnpm run build && \
