@@ -28,7 +28,7 @@ jobs:
         id: cache
         with:
           path: pnpm-store-cache
-          key: build-cache-${{ github.ref_name }}
+          key: build-cache-${{ steps.semver.outputs.tags[2] }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -58,7 +58,7 @@ jobs:
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-            type=raw,value=latest,enable=${{ github.ref_name == 'master' }}
+            type=raw,value=latest
             type=sha
 
       - name: Bake the image
