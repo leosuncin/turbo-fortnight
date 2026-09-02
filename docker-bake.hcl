@@ -5,6 +5,7 @@ target "api" {
   context = "."
   args = {
     "PORT" = 3000
+    PNPM_VERSION = "12"
   }
 }
 
