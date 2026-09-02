@@ -10,6 +10,7 @@ RUN --mount=type=cache,target=/pnpm/store,sharing=locked \
     --mount=type=bind,source=package.json,target=/usr/src/app/package.json \
     --mount=type=bind,source=pnpm-lock.yaml,target=/usr/src/app/pnpm-lock.yaml \
     --mount=type=bind,source=pnpm-workspace.yaml,target=/usr/src/app/pnpm-workspace.yaml \
+    pnpm shim add node && \
     pnpm install --frozen-lockfile
 
 FROM deps AS build
