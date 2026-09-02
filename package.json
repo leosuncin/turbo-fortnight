@@ -51,12 +51,5 @@
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^4.1.2"
   },
-  "packageManager": "pnpm@11.25.0",
-  "devEngines": {
-    "runtime": {
-      "name": "node",
-      "version": "~26.8.1",
-      "onFail": "download"
-    }
-  }
+  "packageManager": "pnpm@11.25.0"
 }
